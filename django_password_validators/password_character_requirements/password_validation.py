@@ -21,8 +21,28 @@ class PasswordCharacterValidator():
         self.special_characters = special_characters
 
     def validate(self, password, user=None):
+        length_alpha = 0
+        length_digit = 0
+        length_lower = 0
+        length_upper = 0
+        length_special = 0
         validation_errors = []
-        if len([char for char in password if char.isdigit()]) < self.min_length_digit:
+
+        for char in password:
+            if char.isalpha():
+                length_alpha += 1
+            elif char.isdigit():
+                length_digit += 1
+
+            if char.islower():
+                length_lower += 1
+            elif char.isupper():
+                length_upper += 1
+
+            if char in self.special_characters:
+                length_special += 1
+
+        if length_digit < self.min_length_digit:
             validation_errors.append(ValidationError(
                 ungettext(
                     'This password must contain at least %(min_length)d digit.',
@@ -32,7 +52,7 @@ class PasswordCharacterValidator():
                 params={'min_length': self.min_length_digit},
                 code='min_length_digit',
             ))
-        if len([char for char in password if char.isalpha()]) < self.min_length_alpha:
+        if length_alpha < self.min_length_alpha:
             validation_errors.append(ValidationError(
                 ungettext(
                     'This password must contain at least %(min_length)d letter.',
@@ -42,7 +62,7 @@ class PasswordCharacterValidator():
                 params={'min_length': self.min_length_alpha},
                 code='min_length_alpha',
             ))
-        if len([char for char in password if char.isupper()]) < self.min_length_upper:
+        if length_upper < self.min_length_upper:
             validation_errors.append(ValidationError(
                 ungettext(
                     'This password must contain at least %(min_length)d upper case letter.',
@@ -52,7 +72,7 @@ class PasswordCharacterValidator():
                 params={'min_length': self.min_length_upper},
                 code='min_length_upper_characters',
             ))
-        if len([char for char in password if char.islower()]) < self.min_length_lower:
+        if length_lower < self.min_length_lower:
             validation_errors.append(ValidationError(
                 ungettext(
                     'This password must contain at least %(min_length)d lower case letter.',
@@ -62,7 +82,7 @@ class PasswordCharacterValidator():
                 params={'min_length': self.min_length_lower},
                 code='min_length_lower_characters',
             ))
-        if len([char for char in password if char in self.special_characters]) < self.min_length_special:
+        if length_special < self.min_length_special:
             validation_errors.append(ValidationError(
                 ungettext(
                     'This password must contain at least %(min_length)d special character.',
